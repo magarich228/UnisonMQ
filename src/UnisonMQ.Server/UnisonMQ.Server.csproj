@@ -11,4 +11,9 @@
       <PackageReference Include="NetCoreServer" Version="8.0.7" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\UnisonMQ.Abstractions\UnisonMQ.Abstractions.csproj" />
+      <ProjectReference Include="..\UnisonMQ.Operations\UnisonMQ.Operations.csproj" />
+    </ItemGroup>
+
 </Project>
