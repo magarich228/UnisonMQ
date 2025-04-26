@@ -2,6 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using UnisonMQ.Abstractions;
+using UnisonMQ.Operations;
+using UnisonMQ.Queues;
 
 namespace UnisonMQ.Server;
 
@@ -30,15 +33,22 @@ public static class HostBuilderExtensions
         
         services.AddSingleton(configuration);
         services.AddSingleton(CreateServer);
+
+        services.AddQueues();
+        services.AddSingleton<ISessionManager, SessionManager>();
+        services.AddOperations();
+        
         services.AddHostedService<UnisonMqHostedService>();
     }
 
     private static UnisonMqServer CreateServer(IServiceProvider serviceProvider)
     {
         var configuration = serviceProvider.GetRequiredService<TcpServerConfiguration>();
+        var sessionManager = serviceProvider.GetRequiredService<ISessionManager>();
+        var operationProcessor = serviceProvider.GetRequiredService<IOperationProcessor>();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         
-        var server = new UnisonMqServer(configuration, loggerFactory);
+        var server = new UnisonMqServer(configuration, sessionManager, operationProcessor, loggerFactory);
         
         return server;
     }

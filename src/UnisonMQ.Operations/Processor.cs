@@ -1,21 +1,19 @@
-﻿using System.Globalization;
-using System.Reflection;
-using UnisonMQ.Abstractions;
+﻿using UnisonMQ.Abstractions;
 
 namespace UnisonMQ.Operations;
 
-public static class Processor
+internal class Processor : IOperationProcessor
 {
-    private static readonly Operation[] Operations;
+    private readonly Operation[] _operations;
     
-    static Processor()
+    public Processor(Operation[] operations)
     {
-        Operations = CollectOperations();
+        _operations = operations;
     }
     
-    public static void Execute(IUnisonMqSession session, string message)
+    public void Execute(IUnisonMqSession session, string message)
     {
-        var operation = Operations
+        var operation = _operations
             .FirstOrDefault(o => 
                 message.StartsWith(o.Keyword, StringComparison.InvariantCultureIgnoreCase));
 
@@ -28,18 +26,5 @@ public static class Processor
         }
         
         operation.ExecuteAsync(session, message);
-    }
-
-    private static Operation[] CollectOperations()
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        var operationType = typeof(Operation);
-
-        var operations = assembly.GetTypes()
-            .Where(t => t.IsSubclassOf(operationType))
-            .Select(t => (Operation)Activator.CreateInstance(t)! ?? 
-                         throw new UnisonMqException("Failed to create operation"));
-
-        return operations.ToArray();
     }
 }
