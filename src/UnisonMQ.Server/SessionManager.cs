@@ -6,6 +6,11 @@ namespace UnisonMQ.Server;
 public class SessionManager : ISessionManager
 {
     private readonly ConcurrentDictionary<Guid, IUnisonMqSession> _sessions = new();
+
+    public bool TryGet(Guid clientId, out IUnisonMqSession? session)
+    {
+        return _sessions.TryGetValue(clientId, out session);
+    }
     
     public void Add(Guid clientId, IUnisonMqSession session)
     {

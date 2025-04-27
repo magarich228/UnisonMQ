@@ -8,7 +8,7 @@ internal class ExitOperation : Operation
     
     public override void ExecuteAsync(IUnisonMqSession session, string message)
     {
-        session.SendAsync("Goodbye!\r\n");
+        session.SendAsync(ResultHelper.Ok());
         session.Disconnect();
     }
 }

@@ -1,10 +1,12 @@
-﻿using UnisonMQ.Abstractions;
+﻿using System.Text.RegularExpressions;
+using UnisonMQ.Abstractions;
 
 namespace UnisonMQ.Operations;
 
 internal class SubscriptionOperation : Operation
 {
     private readonly IQueueService _queueService;
+    private readonly Regex _subjectRegex = new(@"^(?!\.)(?!.*\.$)([a-zA-Z0-9_*-]+)(\.[a-zA-Z0-9_*-]+)*(\.>)?$");
     
     public SubscriptionOperation(IQueueService queueService)
     {
@@ -25,19 +27,35 @@ internal class SubscriptionOperation : Operation
             return;
         }
         
-        var queue = parts[1]; // TODO: validate
+        var subject = parts[1]; // TODO: validate
+
+        if (string.IsNullOrWhiteSpace(subject) ||
+            !IsValidSubscriptionSubject(subject))
+        {
+            session.SendAsync("Invalid subject".Error());
+            session.Disconnect();
+
+            return;
+        }
         
         if (!int.TryParse(parts[2], out int sid) ||
             sid < 0)
         {
-            session.SendAsync("Invalid subscription identifier.\r\n".Error());
+            session.SendAsync("Invalid subscription identifier.".Error());
             session.Disconnect();
 
             return;
         }
 
-        _queueService.Subscribe(session.Id, sid, queue);
+        _queueService.Subscribe(session.Id, sid, subject);
         
         session.SendAsync(ResultHelper.Ok());
+    }
+    
+    private bool IsValidSubscriptionSubject(string subject)
+    {
+        return _subjectRegex.IsMatch(subject) && 
+               !subject.Contains("..") && 
+               (subject.IndexOf('>') == -1 || subject.EndsWith(".>"));
     }
 }
