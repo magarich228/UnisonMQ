@@ -8,6 +8,12 @@ public interface IUnisonMqSession
     long Receive(byte[] buffer, long offset, long size);
     string Receive(long size);
 
+    long Send(byte[] buffer);
+    long Send(byte[] buffer, long offset, long size);
+    long Send(ReadOnlySpan<byte> buffer);
+    long Send(ReadOnlySpan<char> text);
+    long Send(string text);
+    
     bool SendAsync(byte[] buffer);
     bool SendAsync(byte[] buffer, long offset, long size);
     bool SendAsync(ReadOnlySpan<byte> buffer);

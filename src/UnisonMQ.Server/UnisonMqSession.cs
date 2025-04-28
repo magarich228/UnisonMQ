@@ -27,6 +27,7 @@ public class UnisonMqSession : TcpSession, IUnisonMqSession
         _logger.LogInformation("Client connected. Id: {0}", base.Id);
         
         base.SendAsync("UnisonMQ Server\r\n"); // TODO: + INFO
+        base.SendAsync($"Info: {base.Id}\r\n");
         
         base.OnConnected();
     }
