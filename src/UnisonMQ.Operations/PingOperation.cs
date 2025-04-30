@@ -8,8 +8,10 @@ internal class PingOperation : Operation
 
     public override string Keyword => "PING";
     
-    public override void ExecuteAsync(IUnisonMqSession session, string message)
+    public override OperationResult ExecuteAsync(IUnisonMqSession session, byte[] data, object? context = null)
     {
         session.SendAsync(PongResponse);
+
+        return new CompletedResult();
     }
 }

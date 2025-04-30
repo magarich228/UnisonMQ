@@ -1,11 +1,19 @@
 ﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using UnisonMQ.Abstractions;
 
 namespace UnisonMQ.Queues;
 
 internal class SubscriptionManager
 {
-    private readonly ConcurrentDictionary<SubscriptionKey, Subscription> _subscriptions = new();
+    private readonly ILogger<SubscriptionManager> _logger;
+    private readonly ConcurrentDictionary<SubscriptionKey, Subscription> _subscriptions;
+
+    public SubscriptionManager(ILogger<SubscriptionManager> logger)
+    {
+        _logger = logger;
+        _subscriptions = new();
+    }
     
     public void Subscribe(Guid clientId, int sid, string subject)
     {
@@ -29,23 +37,29 @@ internal class SubscriptionManager
 
             if (!maxMessages.HasValue || maxMessages.Value == 0)
             {
-                _subscriptions.TryRemove(key, out _);
+                if (!_subscriptions.TryRemove(key, out _))
+                {
+                    _logger.LogError("Failed to remove subscription {ClientId} {Sid}.", key.ClientId, key.Sid);
+                }
             }
-            else
+            else if (!_subscriptions.TryUpdate(
+                         key,
+                         new Subscription(subscription.Subject, maxMessages.Value),
+                         subscription))
             {
-                _subscriptions.TryUpdate(
-                    key,
-                    new Subscription(subscription.Subject, maxMessages.Value),
-                    subscription);
+                _logger.LogError("Failed to update subscription {ClientId} {Sid}.", key.ClientId, key.Sid);
             }
         }
         else
         {
             var keys = _subscriptions.Keys.Where(k => k.ClientId == clientId);
-
+            
             foreach (var key in keys)
             {
-                _subscriptions.Remove(key, out _);
+                if (!_subscriptions.Remove(key, out _))
+                {
+                    _logger.LogError("Failed to remove subscription {ClientId} {Sid}.", key.ClientId, key.Sid);
+                }
             }
         }
     }

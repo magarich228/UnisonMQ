@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using UnisonMQ.Abstractions;
 
@@ -23,73 +24,89 @@ internal class PublishOperation : Operation
 
     public override string Keyword => "PUB";
 
-    public override void ExecuteAsync(IUnisonMqSession session, string message)
+    public override OperationResult ExecuteAsync(IUnisonMqSession session, byte[] data, object? context = null)
     {
-        var parts = message.Split(' ');
-
-        if (parts.Length != 4)
+        if (context == null)
         {
-            session.SendAsync("Invalid protocol message format.".Error());
-            session.Disconnect();
+            var message = Encoding.UTF8.GetString(data);
+            var parts = message.Split(' ');
 
-            return;
-        }
-
-        var subject = parts[1];
-
-        if (string.IsNullOrWhiteSpace(subject) ||
-            !IsValidPublishSubject(subject))
-        {
-            session.SendAsync("Invalid subject.".Error());
-            session.Disconnect();
-
-            return;
-        }
-
-        var messageLengthPath = parts[2];
-
-        if (!int.TryParse(messageLengthPath, out var messageLength))
-        {
-            session.SendAsync("Invalid message length operation argument.".Error());
-            session.Disconnect();
-
-            return;
-        }
-
-        var part3 = parts[3];
-        var messageBody = part3.Substring(0, part3.Length - 2);
-
-        if (messageBody.Length != messageLength)
-        {
-            session.SendAsync("Invalid message length.".Error());
-            session.Disconnect();
-
-            return;
-        }
-        
-        var subs = _queueService.GetSubscribersForSend(subject);
-
-        foreach (var sub in subs)
-        {
-            if (!_sessionManager.TryGet(sub.ClientId, out var subSession) ||
-                subSession == null)
+            if (parts.Length != 3)
             {
-                _logger.LogWarning("No session received for {0} {1}", sub.ClientId, sub.Sid);
-                
-                continue;
+                session.SendAsync("Invalid protocol message format.".Error());
+                session.Disconnect();
+
+                return CompletedResult.Instance;
             }
 
-            // var messageBytes = payloadBuffer.MessageBytes(subject, sub.Sid, messageLength);
-            var result = subSession.SendAsync(messageBody.Message(sub.QueueName, sub.Sid, messageLength));
+            var subject = parts[1];
 
-            _logger.LogTrace("Sent {0} {1} {2}", sub.ClientId, sub.Sid, result);
+            if (string.IsNullOrWhiteSpace(subject) ||
+                !IsValidPublishSubject(subject))
+            {
+                session.SendAsync("Invalid subject.".Error());
+                session.Disconnect();
+
+                return CompletedResult.Instance;
+            }
+
+            var messageLengthPath = parts[2];
+
+            if (!int.TryParse(messageLengthPath, out var messageLength))
+            {
+                session.SendAsync("Invalid message length operation argument.".Error());
+                session.Disconnect();
+
+                return CompletedResult.Instance;
+            }
+
+            var publishContext = new PublishContext(subject, messageLength);
+
+            return new WaitInputResult(publishContext, messageLength);
         }
+        else
+        {
+            var publishContext = context as PublishContext ??
+                                 throw new UnisonMqException($"Context of an unexpected type {context.GetType()}.");
+            
+            var subs = _queueService.GetSubscribersForSend(publishContext.Subject);
 
-        session.SendAsync(ResultHelper.Ok());
+            foreach (var sub in subs)
+            {
+                if (!_sessionManager.TryGet(sub.ClientId, out var subSession) ||
+                    subSession == null)
+                {
+                    _logger.LogWarning("No session received for {0} {1}", sub.ClientId, sub.Sid);
+
+                    continue;
+                }
+
+                var messageBytes = data.MessageBytes(publishContext.Subject, sub.Sid, publishContext.MessageLength);
+                var result = subSession.SendAsync(messageBytes);
+
+                _logger.LogTrace("Sent {0} {1} {2}", sub.ClientId, sub.Sid, result);
+            }
+
+            session.SendAsync(ResultHelper.Ok());
+            
+            return CompletedResult.Instance;
+        }
     }
 
     public bool IsValidPublishSubject(string subject)
     {
         return _subjectRegex.IsMatch(subject);
+    }
+
+    class PublishContext
+    {
+        public PublishContext(string subject, int messageLength)
+        {
+            Subject = subject;
+            MessageLength = messageLength;
+        }
+
+        public string Subject { get; }
+        public int MessageLength { get; }
     }
 }

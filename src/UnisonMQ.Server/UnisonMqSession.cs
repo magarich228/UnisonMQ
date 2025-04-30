@@ -1,5 +1,4 @@
 ﻿using System.Net.Sockets;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using NetCoreServer;
 using UnisonMQ.Abstractions;
@@ -11,14 +10,12 @@ public class UnisonMqSession : TcpSession, IUnisonMqSession
     private readonly IOperationProcessor _operationProcessor;
     private readonly ILogger<UnisonMqSession> _logger;
     
-    private readonly StringBuilder _buffer = new();
-    
     public UnisonMqSession(
         TcpServer server,
-        IOperationProcessor operationProcessor,
+        IOperationProcessorFactory operationProcessorFactory,
         ILogger<UnisonMqSession> logger) : base(server)
     {
-        _operationProcessor = operationProcessor;
+        _operationProcessor = operationProcessorFactory.Create();
         _logger = logger;
     }
     
@@ -41,18 +38,10 @@ public class UnisonMqSession : TcpSession, IUnisonMqSession
 
     protected override void OnReceived(byte[] buffer, long offset, long size)
     {
-        string data = Encoding.UTF8.GetString(buffer, (int) offset, (int) size);
-        _buffer.Append(data);
+        var data = new byte[size - offset];
+        Array.Copy(buffer, offset, data, 0, data.Length);
         
-        if (data.Contains("\r\n"))
-        {
-            _logger.LogInformation("Client: {0}", _buffer.ToString()); // TODO: Temp
-            var message = _buffer.ToString();
-            
-            _operationProcessor.Execute(this, message);
-            
-            _buffer.Clear();
-        }
+        _operationProcessor.Execute(this, data);
         
         base.OnReceived(buffer, offset, size);
     }

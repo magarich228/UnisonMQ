@@ -45,10 +45,16 @@ public static class HostBuilderExtensions
     {
         var configuration = serviceProvider.GetRequiredService<TcpServerConfiguration>();
         var sessionManager = serviceProvider.GetRequiredService<ISessionManager>();
-        var operationProcessor = serviceProvider.GetRequiredService<IOperationProcessor>();
+        var queueService = serviceProvider.GetRequiredService<IQueueService>();
+        var operationProcessorFactory = serviceProvider.GetRequiredService<IOperationProcessorFactory>();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         
-        var server = new UnisonMqServer(configuration, sessionManager, operationProcessor, loggerFactory);
+        var server = new UnisonMqServer(
+            configuration, 
+            sessionManager,
+            queueService,
+            operationProcessorFactory, 
+            loggerFactory);
         
         return server;
     }

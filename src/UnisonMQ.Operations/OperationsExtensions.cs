@@ -10,14 +10,14 @@ public static class OperationsExtensions
     {
         services
             .RegisterOperations()
-            .AddSingleton<IOperationProcessor>(serviceProvider =>
+            .AddSingleton<IOperationProcessorFactory>(serviceProvider =>
         {
             var operationTypes = serviceProvider.GetRequiredService<OperationTypes>();
             var operations = operationTypes.Select(
                 t => (Operation)serviceProvider.GetRequiredService(t))
                 .ToArray();
 
-            return new Processor(operations);
+            return new ProcessorFactory(operations);
         });
         
         return services;

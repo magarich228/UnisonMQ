@@ -2,5 +2,5 @@
 
 public interface IOperationProcessor
 {
-    void Execute(IUnisonMqSession session, string message);
+    void Execute(IUnisonMqSession session, byte[] data);
 }

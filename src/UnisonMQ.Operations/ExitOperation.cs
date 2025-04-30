@@ -6,9 +6,11 @@ internal class ExitOperation : Operation
 {
     public override string Keyword => "exit";
     
-    public override void ExecuteAsync(IUnisonMqSession session, string message)
+    public override OperationResult ExecuteAsync(IUnisonMqSession session, byte[] data, object? context = null)
     {
         session.SendAsync(ResultHelper.Ok());
         session.Disconnect();
+
+        return new CompletedResult();
     }
 }

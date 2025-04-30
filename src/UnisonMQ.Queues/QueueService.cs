@@ -1,10 +1,17 @@
-﻿using UnisonMQ.Abstractions;
+﻿using Microsoft.Extensions.Logging;
+using UnisonMQ.Abstractions;
 
 namespace UnisonMQ.Queues;
 
 internal class QueueService : IQueueService
 {
-    private readonly SubscriptionManager _subManager = new();
+    private readonly SubscriptionManager _subManager;
+
+    public QueueService(ILoggerFactory loggerFactory)
+    {
+        var subManagerLogger = loggerFactory.CreateLogger<SubscriptionManager>();
+        _subManager = new(subManagerLogger);
+    }
     
     public void Subscribe(Guid clientId, int sid, string subject)
     {

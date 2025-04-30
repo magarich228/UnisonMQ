@@ -1,4 +1,5 @@
-﻿using UnisonMQ.Abstractions;
+﻿using System.Text;
+using UnisonMQ.Abstractions;
 
 namespace UnisonMQ.Operations;
 
@@ -13,8 +14,9 @@ internal class UnsubscribeOperation : Operation
     
     public override string Keyword => "UNSUB";
     
-    public override void ExecuteAsync(IUnisonMqSession session, string message)
+    public override OperationResult ExecuteAsync(IUnisonMqSession session, byte[] data, object? context = null)
     {
+        var message = Encoding.UTF8.GetString(data);
         var parts = message.Split(' ');
         var partsLength = parts.Length;
 
@@ -25,7 +27,7 @@ internal class UnsubscribeOperation : Operation
                 session.SendAsync("Protocol message sid argument format error.".Error());
                 session.Disconnect();
 
-                return;
+                return CompletedResult.Instance;
             }
             
             _queueService.Unsubscribe(session.Id, sid);
@@ -39,7 +41,7 @@ internal class UnsubscribeOperation : Operation
                 session.SendAsync("Protocol message sid argument format error.".Error());
                 session.Disconnect();
 
-                return;
+                return CompletedResult.Instance;
             }
             
             if (!int.TryParse(parts[2], out var maxMessages))
@@ -47,7 +49,7 @@ internal class UnsubscribeOperation : Operation
                 session.SendAsync("Protocol message max messages argument format error.".Error());
                 session.Disconnect();
 
-                return;
+                return CompletedResult.Instance;
             }
             
             _queueService.Unsubscribe(session.Id, sid, maxMessages);
@@ -59,5 +61,7 @@ internal class UnsubscribeOperation : Operation
             session.SendAsync("Protocol message format error.".Error());
             session.Disconnect();
         }
+        
+        return CompletedResult.Instance;
     }
 }

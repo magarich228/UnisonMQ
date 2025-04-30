@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using UnisonMQ.Abstractions;
 
 namespace UnisonMQ.Operations;
@@ -14,8 +15,9 @@ internal class SubscriptionOperation : Operation
     }
     
     public override string Keyword => "SUB";
-    public override void ExecuteAsync(IUnisonMqSession session, string message)
+    public override OperationResult ExecuteAsync(IUnisonMqSession session, byte[] data, object? context = null)
     {
+        var message = Encoding.UTF8.GetString(data);
         var parts = message.Split(' ');
         
         // TODO: queue group
@@ -24,7 +26,7 @@ internal class SubscriptionOperation : Operation
             session.SendAsync("Protocol message format error.".Error());
             session.Disconnect();
 
-            return;
+            return CompletedResult.Instance;
         }
         
         var subject = parts[1]; // TODO: validate
@@ -35,7 +37,7 @@ internal class SubscriptionOperation : Operation
             session.SendAsync("Invalid subject".Error());
             session.Disconnect();
 
-            return;
+            return CompletedResult.Instance;
         }
         
         if (!int.TryParse(parts[2], out int sid) ||
@@ -44,12 +46,14 @@ internal class SubscriptionOperation : Operation
             session.SendAsync("Invalid subscription identifier.".Error());
             session.Disconnect();
 
-            return;
+            return CompletedResult.Instance;
         }
 
         _queueService.Subscribe(session.Id, sid, subject);
         
         session.SendAsync(ResultHelper.Ok());
+        
+        return CompletedResult.Instance;
     }
     
     private bool IsValidSubscriptionSubject(string subject)

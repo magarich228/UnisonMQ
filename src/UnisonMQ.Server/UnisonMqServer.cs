@@ -10,26 +10,30 @@ internal class UnisonMqServer : TcpServer
     private readonly ILogger<UnisonMqSession> _sessionLogger;
 
     private readonly ISessionManager _sessionManager;
-    private readonly IOperationProcessor _operationProcessor;
+    private readonly IQueueService _queueService;
+    private readonly IOperationProcessorFactory _operationProcessorFactory;
 
     public UnisonMqServer(
         TcpServerConfiguration configuration,
         ISessionManager sessionManager,
-        IOperationProcessor operationProcessor,
+        IQueueService queueService,
+        IOperationProcessorFactory operationProcessorFactory,
         ILoggerFactory loggerFactory) : base(configuration.Ip, configuration.Port)
     {
         _logger = loggerFactory.CreateLogger<UnisonMqServer>();
         _sessionLogger = loggerFactory.CreateLogger<UnisonMqSession>();
         
         _sessionManager = sessionManager;
-        _operationProcessor = operationProcessor;
+        _queueService = queueService;
+        _operationProcessorFactory = operationProcessorFactory;
     }
 
     public UnisonMqServer(
         string address,
         int port,
         ISessionManager sessionManager,
-        IOperationProcessor operationProcessor,
+        IQueueService queueService,
+        IOperationProcessorFactory operationProcessorFactory,
         ILoggerFactory loggerFactory) 
         : this(
             new TcpServerConfiguration()
@@ -38,7 +42,8 @@ internal class UnisonMqServer : TcpServer
                 Port = port
             },
             sessionManager,
-            operationProcessor,
+            queueService,
+            operationProcessorFactory,
             loggerFactory) { }
 
     public override bool Start()
@@ -65,9 +70,10 @@ internal class UnisonMqServer : TcpServer
     protected override void OnDisconnected(TcpSession session)
     {
         _sessionManager.Remove(session.Id);
+        _queueService.Unsubscribe(session.Id, null);
         
         base.OnDisconnected(session);
     }
 
-    protected override TcpSession CreateSession() => new UnisonMqSession(this, _operationProcessor, _sessionLogger);
+    protected override TcpSession CreateSession() => new UnisonMqSession(this, _operationProcessorFactory, _sessionLogger);
 }

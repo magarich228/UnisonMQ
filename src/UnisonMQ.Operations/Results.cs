@@ -15,12 +15,12 @@ internal static class ResultHelper
     public static string Ok() => $"{Results.Ok}\r\n";
     public static string Error(this string message) => $"{Results.Error} {message}\r\n";
     public static string Message(this string message, string subject, int sid, int messageLength) => 
-        $"{Results.Message} {subject} {sid} {messageLength} {message}\r\n";
+        $"{Results.Message} {subject} {sid} {messageLength}\r\n{message}\r\n";
 
     public static byte[] MessageBytes(this byte[] message, string subject, int sid, int messageLength)
     {
         var messageSignature = Encoding.UTF8.GetBytes($"{Results.Message} {subject} {sid} {messageLength}\r\n");
-        var result = ArrayPool<byte>.Shared.Rent(messageSignature.Length + messageLength);
+        var result = ArrayPool<byte>.Shared.Rent(messageSignature.Length + messageLength + 2);
         
         Array.Copy(messageSignature, result, messageSignature.Length);
         Array.Copy(message, 0, result, messageSignature.Length, message.Length);
