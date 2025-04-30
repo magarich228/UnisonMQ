@@ -68,8 +68,8 @@ internal class SubscriptionManager
     {
         return _subscriptions
             .Where(s => s.Value.IsMatch(queueName) && 
-                        !s.Value.MessageBalance.HasValue ||
-                        s.Value.MessageBalance > 0)
+                        (!s.Value.MessageBalance.HasValue ||
+                        s.Value.MessageBalance > 0))
             .Select(s =>
             {
                 s.Value.DecrementBalance();
