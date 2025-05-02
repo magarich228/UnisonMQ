@@ -7,7 +7,7 @@ internal static class Serialization
 {
     public static byte[] Serialize(object data)
     {
-        var json = JsonConvert.SerializeObject(data);
+        var json = JsonConvert.SerializeObject(data, Formatting.Indented);
 
         return Encoding.UTF8.GetBytes(json);
     }

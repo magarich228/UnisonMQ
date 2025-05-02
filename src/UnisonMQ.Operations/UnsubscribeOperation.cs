@@ -44,7 +44,8 @@ internal class UnsubscribeOperation : Operation
                 return CompletedResult.Instance;
             }
             
-            if (!int.TryParse(parts[2], out var maxMessages))
+            if (!int.TryParse(parts[2], out var maxMessages) ||
+                maxMessages <= 0)
             {
                 session.SendAsync("Protocol message max messages argument format error.".Error());
                 session.Disconnect();

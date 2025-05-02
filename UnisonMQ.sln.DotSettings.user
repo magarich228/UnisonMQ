@@ -1,6 +1,11 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0df5b5e0_002D2a53_002D4f53_002Db116_002D00a4631b34f5/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=092cbc64_002D76a9_002D423c_002D9c29_002D894cb2778f1c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="PingTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::6287F178-8F62-4901-B343-713DDB507E10::net8.0::UnisonMQ.E2E.Tests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::6287F178-8F62-4901-B343-713DDB507E10::net8.0::UnisonMQ.E2E.Tests.PingTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::762D5635-E363-4BF5-8050-5C3D1E002DB2::net8.0::UnisonMQ.ClientTests.Tests.Test1&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::762D5635-E363-4BF5-8050-5C3D1E002DB2::net8.0::UnisonMQ.ClientTests.Tests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::762D5635-E363-4BF5-8050-5C3D1E002DB2::net8.0::UnisonMQ.ClientTests.CommunicationManagerTests.Expect3DifferentResponsesTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::6287F178-8F62-4901-B343-713DDB507E10::net8.0::UnisonMQ.E2E.Tests.SimplePubSubTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	</wpf:ResourceDictionary>
