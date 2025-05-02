@@ -1,8 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>UnisonMQ.Client</Title>
+        <Description>Client library for UnisonMQ broker.</Description>
+        <PackageProjectUrl>https://github.com/magarich228/UnisonMQ</PackageProjectUrl>
+        <PackageLicenseUrl>https://mit-license.org/</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/magarich228/UnisonMQ</RepositoryUrl>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NetCoreServer" Version="8.0.7" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
 
 </Project>
