@@ -29,6 +29,22 @@ internal class PublishOperation : Operation
         if (context == null)
         {
             var message = Encoding.UTF8.GetString(data);
+            var isFullMessage = false;
+
+            if (message.Split("\r\n").Length == 3)
+            {
+                var messageSignatureLength = message.IndexOf("\r\n", StringComparison.Ordinal) + 2;
+                message = message.Substring(
+                    0, 
+                    messageSignatureLength);
+
+                var original = data;
+                data = new byte[original.Length - messageSignatureLength];
+                Array.Copy(original, messageSignatureLength, data, 0, data.Length);
+
+                isFullMessage = true;
+            }
+            
             var parts = message.Split(' ');
 
             if (parts.Length != 3)
@@ -66,7 +82,15 @@ internal class PublishOperation : Operation
 
             var publishContext = new PublishContext(subject, messageLength);
 
-            return new WaitInputResult(publishContext, messageLength);
+            if (isFullMessage)
+            {
+
+                return ExecuteAsync(session, data, publishContext);
+            }
+            else
+            {
+                return new WaitInputResult(publishContext, messageLength);
+            }
         }
         else
         {

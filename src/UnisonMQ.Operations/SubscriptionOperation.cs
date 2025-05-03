@@ -29,7 +29,7 @@ internal class SubscriptionOperation : Operation
             return CompletedResult.Instance;
         }
         
-        var subject = parts[1]; // TODO: validate
+        var subject = parts[1];
 
         if (string.IsNullOrWhiteSpace(subject) ||
             !IsValidSubscriptionSubject(subject))

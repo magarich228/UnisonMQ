@@ -22,9 +22,6 @@ internal class Processor : IOperationProcessor
     
     public void Execute(IUnisonMqSession session, byte[] data)
     {
-        // TODO: Temp
-        Console.WriteLine("data: " + Encoding.UTF8.GetString(data)); // TODO: на линухе pub приходит сразу вместе с телом сообщения
-        
         _buffer.AddRange(data);
         _offset += data.Length;
 
@@ -45,7 +42,6 @@ internal class Processor : IOperationProcessor
         }
         
         var operationData = _buffer.Take(_offset).ToArray();
-        Console.WriteLine(Encoding.UTF8.GetString(operationData)); //TODO: temp
         
         var result = Operation.ExecuteAsync(session, operationData, OperationContext);
         result.Apply(this);

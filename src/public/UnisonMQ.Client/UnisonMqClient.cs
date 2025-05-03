@@ -105,22 +105,18 @@ public class UnisonMqClient(UnisonMqConfiguration configuration)
     {
         var data = new byte[size];
         Array.Copy(buffer, offset, data, 0, data.Length);
-
-        Console.WriteLine($"Received: {Encoding.UTF8.GetString(data)}");
         
         if (data.ElementAtOrDefault(0) == 'M' &&
             data.ElementAtOrDefault(1) == 'S' &&
             data.ElementAtOrDefault(2) == 'G' &&
             data.ElementAtOrDefault(3) == ' ')
         {
-            Console.WriteLine("Process message..");
             ProcessMessage(data);
         }
         else if (data.ElementAtOrDefault(0) == '+' &&
                  data.ElementAtOrDefault(1) == 'O' &&
                  data.ElementAtOrDefault(2) == 'K')
         {
-            Console.WriteLine("Ok received..");
             _manager.Received(Response.Ok);
         }
         else if (data.ElementAtOrDefault(0) == '-' &&
@@ -128,7 +124,6 @@ public class UnisonMqClient(UnisonMqConfiguration configuration)
                  data.ElementAtOrDefault(2) == 'R' &&
                  data.ElementAtOrDefault(3) == 'R')
         {
-            Console.WriteLine("Error received..");
             _manager.Received(Response.Error);
         }
         else if (data.ElementAtOrDefault(0) == 'P' &&
@@ -136,7 +131,6 @@ public class UnisonMqClient(UnisonMqConfiguration configuration)
                  data.ElementAtOrDefault(2) == 'N' &&
                  data.ElementAtOrDefault(3) == 'G')
         {
-            Console.WriteLine("Pong received..");
             _manager.Received(Response.Pong);
         }
 
