@@ -3,7 +3,6 @@
 await using IUnisonMqClient client = new UnisonMqClient("127.0.0.1", 5888);
 
 client.ConnectAsync();
-client.ReceiveAsync();
 
 client.Ping();
 

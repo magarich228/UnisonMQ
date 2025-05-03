@@ -7,7 +7,7 @@ public class Tests
 {
     private IUnisonMqClient _client = null!;
     
-    [SetUp]
+    [OneTimeSetUp]
     public void Setup()
     {
         _client = new UnisonMqClient("127.0.0.1", 5888);
@@ -16,7 +16,7 @@ public class Tests
         Assert.IsTrue(connected);
     }
 
-    [TearDown]
+    [OneTimeTearDown]
     public void TearDown()
     {
         var closed = _client.CloseAsync();
@@ -37,7 +37,7 @@ public class Tests
     public void SimplePubSubTest()
     {
         var received = false;
-        var subject = "test;";
+        var subject = "test";
         var messageStr = "testMessage";
         
         _client.Subscribe<string>(subject, (message =>
@@ -46,7 +46,7 @@ public class Tests
                        message.Data == messageStr;
         }));
         
-        _client.Publish("test", messageStr);
+        _client.Publish(subject, messageStr);
 
         Task.Delay(5000).Wait();
         

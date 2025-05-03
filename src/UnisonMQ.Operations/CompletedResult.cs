@@ -3,7 +3,7 @@
 internal class CompletedResult : OperationResult
 {
     private static readonly CompletedResult ResultInstance = new();
-    public static CompletedResult Instance = ResultInstance;
+    public static CompletedResult Instance { get; } = ResultInstance;
     
     public override void Apply(Processor processor)
     {

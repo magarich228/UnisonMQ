@@ -54,9 +54,13 @@ internal class PublishOperation : Operation
 
             if (!int.TryParse(messageLengthPath, out var messageLength))
             {
-                session.SendAsync("Invalid message length operation argument.".Error());
+                var error = "Invalid message length operation argument.".Error();
+                
+                session.SendAsync(error);
                 session.Disconnect();
 
+                _logger.LogDebug(error + $" {messageLengthPath}");
+                
                 return CompletedResult.Instance;
             }
 
