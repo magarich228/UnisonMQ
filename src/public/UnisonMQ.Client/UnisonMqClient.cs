@@ -8,7 +8,7 @@ using NetCoreServer;
 
 namespace UnisonMQ.Client;
 
-public class UnisonMqClient(UnisonMqConfiguration configuration)
+internal class UnisonMqClient(UnisonMqConfiguration configuration)
     : TcpClient(configuration.Ip, configuration.Port), IUnisonMqClient
 {
     private readonly Dictionary<long, UnisonMessageFactory> _subscriptions = new();

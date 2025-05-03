@@ -10,7 +10,7 @@ public class Tests
     [OneTimeSetUp]
     public void Setup()
     {
-        _client = new UnisonMqClient("127.0.0.1", 5888);
+        _client = new UnisonMqClientService("127.0.0.1", 5888);
         var connected = _client.ConnectAsync();
         
         Assert.IsTrue(connected);
