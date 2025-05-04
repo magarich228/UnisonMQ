@@ -30,8 +30,8 @@ internal class PublishOperation : Operation
         {
             var message = Encoding.UTF8.GetString(data);
             var isFullMessage = false;
-
-            if (message.Split("\r\n").Length == 3)
+            
+            if (message.Split("\r\n").Length >= 3)
             {
                 var messageSignatureLength = message.IndexOf("\r\n", StringComparison.Ordinal) + 2;
                 message = message.Substring(

@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using UnisonMQ.Abstractions;
 
 namespace UnisonMQ.Operations;
@@ -11,18 +12,20 @@ public static class OperationsExtensions
         services
             .RegisterOperations()
             .AddSingleton<IOperationProcessorFactory>(serviceProvider =>
-        {
-            var operationTypes = serviceProvider.GetRequiredService<OperationTypes>();
-            var operations = operationTypes.Select(
-                t => (Operation)serviceProvider.GetRequiredService(t))
-                .ToArray();
+            {
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-            return new ProcessorFactory(operations);
-        });
-        
+                var operationTypes = serviceProvider.GetRequiredService<OperationTypes>();
+                var operations = operationTypes.Select(
+                        t => (Operation)serviceProvider.GetRequiredService(t))
+                    .ToArray();
+
+                return new ProcessorFactory(operations, loggerFactory);
+            });
+
         return services;
     }
-    
+
     private static IServiceCollection RegisterOperations(this IServiceCollection services)
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -39,7 +42,7 @@ public static class OperationsExtensions
         }
 
         services.AddSingleton(operationTypes);
-        
+
         return services;
     }
 }

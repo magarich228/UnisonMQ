@@ -27,7 +27,7 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
     #endregion
 
     #region IUnisonMqClient
-    
+
     public void Ping()
     {
         base.SendAsync("ping\r\n");
@@ -38,17 +38,17 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
             throw new UnisonMqClientException($"Pong not received {expectationResult}.");
         }
     }
-    
+
     public void Subscribe<T>(string subject, Action<UnisonMessage<T>> onReceived)
     {
         var sid = _subscriptionId++;
-        
+
         base.SendAsync($"sub {subject} {sid}\r\n");
         var expectationResult = _manager.ExpectDuring(
-            TimeSpan.FromSeconds(5), 
-            Response.Ok, 
+            TimeSpan.FromSeconds(5),
+            Response.Ok,
             Response.Error);
-        
+
         if (expectationResult != 0)
         {
             throw new UnisonMqClientException($"Subscription operation failed with code {expectationResult}.");
@@ -62,22 +62,27 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
         var messageBody = Serialization.Serialize(data);
         var messageBodyLength = messageBody.Length;
         var fullMessageBodyLength = messageBodyLength + 2;
-        
+
         Array.Resize(ref messageBody, fullMessageBodyLength);
         messageBody[fullMessageBodyLength - 2] = 13;
         messageBody[fullMessageBodyLength - 1] = 10;
-        
+
         var message = $"pub {subject} {messageBodyLength}\r\n";
         var messageBytes = Encoding.UTF8.GetBytes(message);
+        var messageBytesLength = messageBytes.Length;
 
-        base.SendAsync(messageBytes, 0, messageBytes.Length);
-        base.SendAsync(messageBody, 0, fullMessageBodyLength);
-        
+        var buffer = new byte[messageBytes.Length + fullMessageBodyLength];
+
+        Array.Copy(messageBytes, 0, buffer, 0, messageBytesLength);
+        Array.Copy(messageBody, 0, buffer, messageBytesLength, messageBodyLength);
+
+        base.SendAsync(buffer);
+
         var expectationResult = _manager.ExpectDuring(
-            TimeSpan.FromSeconds(5), 
-            Response.Ok, 
+            TimeSpan.FromSeconds(60),
+            Response.Ok,
             Response.Error);
-        
+
         if (expectationResult != 0)
         {
             throw new UnisonMqClientException($"Publish operation failed with code {expectationResult}.");
@@ -87,7 +92,7 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
     public override bool ConnectAsync()
     {
         var connected = base.Connect();
-        
+
         if (connected)
             base.ReceiveAsync();
 
@@ -98,24 +103,27 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
     {
         return base.DisconnectAsync();
     }
-    
+
     #endregion
 
     protected override void OnReceived(byte[] buffer, long offset, long size)
     {
         var data = new byte[size];
         Array.Copy(buffer, offset, data, 0, data.Length);
-        
+
         if (data.ElementAtOrDefault(0) == 'M' &&
             data.ElementAtOrDefault(1) == 'S' &&
             data.ElementAtOrDefault(2) == 'G' &&
             data.ElementAtOrDefault(3) == ' ')
         {
-            ProcessMessage(data);
+            var processed = ProcessMessage(data);
+
+            data = GetTrimmedBuffer(data, processed, size - processed);
         }
-        else if (data.ElementAtOrDefault(0) == '+' &&
-                 data.ElementAtOrDefault(1) == 'O' &&
-                 data.ElementAtOrDefault(2) == 'K')
+        
+        if (data.ElementAtOrDefault(0) == '+' &&
+            data.ElementAtOrDefault(1) == 'O' &&
+            data.ElementAtOrDefault(2) == 'K')
         {
             _manager.Received(Response.Ok);
         }
@@ -137,7 +145,18 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
         base.OnReceived(buffer, offset, size);
     }
 
-    private void ProcessMessage(byte[] buffer)
+    private byte[] GetTrimmedBuffer(byte[] buffer, long offset, long size)
+    {
+        // TODO: profile.
+        var dataQuery = buffer
+            .Skip((int)offset)
+            .Take((int)size)
+            .SkipWhile(b => b == 0);
+
+        return dataQuery.ToArray();
+    }
+
+    private long ProcessMessage(byte[] buffer)
     {
         var nIndex = Array.IndexOf(buffer, (byte)'\n');
         var messageBufferRequiredLength = nIndex + 1;
@@ -161,6 +180,8 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
         {
             factory.CreateAndInvoke(subject, messageBodyBuffer);
         }
+
+        return messageBufferRequiredLength + messageLength;
     }
 
     #region IDisposable

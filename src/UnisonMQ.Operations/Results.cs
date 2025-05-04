@@ -20,7 +20,11 @@ internal static class ResultHelper
     public static byte[] MessageBytes(this byte[] message, string subject, int sid, int messageLength)
     {
         var messageSignature = Encoding.UTF8.GetBytes($"{Results.Message} {subject} {sid} {messageLength}\r\n");
-        var result = ArrayPool<byte>.Shared.Rent(messageSignature.Length + messageLength + 2);
+
+        var resultLength = messageSignature.Length + messageLength + 2;
+        var result = ArrayPool<byte>.Shared.Rent(resultLength);
+        result[resultLength - 2] = 13;
+        result[resultLength - 1] = 10;
         
         Array.Copy(messageSignature, result, messageSignature.Length);
         Array.Copy(message, 0, result, messageSignature.Length, message.Length);

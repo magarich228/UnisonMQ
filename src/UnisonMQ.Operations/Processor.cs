@@ -1,10 +1,13 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using UnisonMQ.Abstractions;
 
 namespace UnisonMQ.Operations;
 
 internal class Processor : IOperationProcessor
 {
+    private readonly ILogger<Processor> _logger;
+    
     private readonly Operation[] _operations;
     private readonly List<byte> _buffer;
     private int _offset;
@@ -13,9 +16,10 @@ internal class Processor : IOperationProcessor
     internal Operation? Operation { get; set; }
     internal object? OperationContext { get; set; }
     
-    public Processor(Operation[] operations)
+    public Processor(Operation[] operations, ILogger<Processor> logger)
     {
         _operations = operations;
+        _logger = logger;
         _buffer = new List<byte>(1024);
         WaitAction = DefaultWaitAction;
     }
@@ -42,6 +46,9 @@ internal class Processor : IOperationProcessor
         }
         
         var operationData = _buffer.Take(_offset).ToArray();
+        
+        // TODO: temp or only development environment
+        _logger.LogDebug("operation data: {OperationData}", Encoding.UTF8.GetString(operationData));
         
         var result = Operation.ExecuteAsync(session, operationData, OperationContext);
         result.Apply(this);

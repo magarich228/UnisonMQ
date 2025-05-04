@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\public\UnisonMQ.Client\UnisonMQ.Client.csproj" />
+      <ProjectReference Include="..\DemoConsole.Contracts\DemoConsole.Contracts.csproj" />
     </ItemGroup>
 
 </Project>
