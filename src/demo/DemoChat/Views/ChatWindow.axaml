@@ -1,0 +1,44 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:vm="using:DemoChat.ViewModels"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="DemoChat.Views.ChatWindow"
+        x:DataType="vm:ChatViewModel"
+        Title="ChatWindow">
+   <Grid ColumnDefinitions="80,*,80"
+         RowDefinitions="80,*,100"
+         ShowGridLines="True">
+       <Button Content="Выйти"
+               Click="Exit_OnLick"/>
+       
+       <StackPanel Grid.Row="1"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="3">
+           <ScrollViewer>
+               <ListBox ItemsSource="{Binding Events}">
+                   <ListBox.ItemTemplate>
+                       <DataTemplate>
+                           <UserControl Content="{Binding }"/>
+                       </DataTemplate>
+                   </ListBox.ItemTemplate>
+               </ListBox>
+           </ScrollViewer>
+       </StackPanel>
+       
+       <TextBox Grid.Row="2"
+                Grid.Column="1"
+                Name="MessageInput"
+                Text="{Binding Message}"/>
+       
+       <Button Grid.Column="2"
+               Grid.Row="2"
+               Height="30"
+               Width="80"
+               Content="Отправить"
+               FontSize="10"
+               VerticalContentAlignment="Center"
+               Click="Send_OnClick"/>
+   </Grid>
+</Window>
