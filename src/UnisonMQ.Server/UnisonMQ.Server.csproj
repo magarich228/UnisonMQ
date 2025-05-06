@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\UnisonMQ.Abstractions\UnisonMQ.Abstractions.csproj" />
+      <ProjectReference Include="..\UnisonMQ.Metrics\UnisonMQ.Metrics.csproj" />
       <ProjectReference Include="..\UnisonMQ.Operations\UnisonMQ.Operations.csproj" />
       <ProjectReference Include="..\UnisonMQ.Queues\UnisonMQ.Queues.csproj" />
     </ItemGroup>

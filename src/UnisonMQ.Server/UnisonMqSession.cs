@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using NetCoreServer;
 using UnisonMQ.Abstractions;
+using UnisonMQ.Metrics;
 
 namespace UnisonMQ.Server;
 
@@ -24,8 +25,9 @@ public class UnisonMqSession : TcpSession, IUnisonMqSession
         _logger.LogInformation("Client connected. Id: {0}", base.Id);
         
         base.SendAsync($"UnisonMQ Server\r\nInfo: {base.Id}\r\n");
-        
         base.OnConnected();
+        
+        UnisonMetrics.ConnectionOpened();
     }
 
     protected override void OnDisconnected()
@@ -33,12 +35,17 @@ public class UnisonMqSession : TcpSession, IUnisonMqSession
         _logger.LogInformation("Client disconnected. Id: {0}", base.Id);
         
         base.OnDisconnected();
+        
+        UnisonMetrics.ConnectionClosed();
     }
 
     protected override void OnReceived(byte[] buffer, long offset, long size)
     {
         var data = new byte[size - offset];
         Array.Copy(buffer, offset, data, 0, data.Length);
+        
+        UnisonMetrics.MessageReceived();
+        UnisonMetrics.BytesReceived(data.Length);
         
         _operationProcessor.Execute(this, data);
         
