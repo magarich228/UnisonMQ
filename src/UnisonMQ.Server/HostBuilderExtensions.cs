@@ -52,6 +52,8 @@ public static class HostBuilderExtensions
             {
                 m
                     .AddMeter("UnisonMQ.Metrics")
+                    .AddRuntimeInstrumentation()
+                    .AddProcessInstrumentation()
                     .AddPrometheusHttpListener(opt =>
                     {
                         opt.UriPrefixes = new[] { $"http://{metricsConfiguration.MetricsIp}:{metricsConfiguration.MetricsPort}/" };
