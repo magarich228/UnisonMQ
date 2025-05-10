@@ -1,6 +1,6 @@
 execution:
   - executor: nunit
-    concurrency: 100
-    iterations: 100
+    concurrency: 4
+    iterations: 500
     scenario:
       script: ./bin/Debug/net8.0/UnisonMQ.Performance.dll

@@ -44,7 +44,6 @@ public class UnisonMqSession : TcpSession, IUnisonMqSession
         var data = new byte[size - offset];
         Array.Copy(buffer, offset, data, 0, data.Length);
         
-        UnisonMetrics.MessageReceived();
         UnisonMetrics.BytesReceived(data.Length);
         
         _operationProcessor.Execute(this, data);

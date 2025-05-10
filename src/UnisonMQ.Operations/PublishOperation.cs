@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using UnisonMQ.Abstractions;
+using UnisonMQ.Metrics;
 
 namespace UnisonMQ.Operations;
 
@@ -115,6 +116,7 @@ internal class PublishOperation : Operation
                 _logger.LogTrace("Sent {0} {1} {2}", sub.ClientId, sub.Sid, result);
             }
 
+            UnisonMetrics.MessageReceived();
             session.SendAsync(ResultHelper.Ok());
             
             return CompletedResult.Instance;

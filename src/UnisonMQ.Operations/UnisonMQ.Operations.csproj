@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\UnisonMQ.Abstractions\UnisonMQ.Abstractions.csproj" />
+      <ProjectReference Include="..\UnisonMQ.Metrics\UnisonMQ.Metrics.csproj" />
     </ItemGroup>
 
 </Project>
