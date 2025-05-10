@@ -22,6 +22,11 @@ public class SessionManager : ISessionManager
 
     public void Remove(Guid clientId)
     {
+        if (!_sessions.ContainsKey(clientId))
+        {
+            return;
+        }
+        
         if (!_sessions.TryRemove(clientId, out _))
         {
             throw new UnisonMqException("Failed to remove session.");

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NetCoreServer;
 using UnisonMQ.Abstractions;
+using UnisonMQ.Metrics;
 
 namespace UnisonMQ.Server;
 
@@ -12,9 +13,12 @@ internal class UnisonMqServer : TcpServer
     private readonly ISessionManager _sessionManager;
     private readonly IQueueService _queueService;
     private readonly IOperationProcessorFactory _operationProcessorFactory;
+    
+    private readonly MetricsConfiguration _metricsConfiguration;
 
     public UnisonMqServer(
         TcpServerConfiguration configuration,
+        MetricsConfiguration metricsConfiguration,
         ISessionManager sessionManager,
         IQueueService queueService,
         IOperationProcessorFactory operationProcessorFactory,
@@ -26,11 +30,14 @@ internal class UnisonMqServer : TcpServer
         _sessionManager = sessionManager;
         _queueService = queueService;
         _operationProcessorFactory = operationProcessorFactory;
+
+        _metricsConfiguration = metricsConfiguration;
     }
 
     public UnisonMqServer(
         string address,
         int port,
+        MetricsConfiguration metricsConfiguration,
         ISessionManager sessionManager,
         IQueueService queueService,
         IOperationProcessorFactory operationProcessorFactory,
@@ -41,6 +48,7 @@ internal class UnisonMqServer : TcpServer
                 Ip = address,
                 Port = port
             },
+            metricsConfiguration,
             sessionManager,
             queueService,
             operationProcessorFactory,
@@ -49,6 +57,9 @@ internal class UnisonMqServer : TcpServer
     public override bool Start()
     {
         _logger.LogInformation("Starting UnisonMQ server on {Address}:{Port}", Address, Port);
+        _logger.LogInformation("Metrics on {MetricsIp}:{MetricsPort}", 
+            _metricsConfiguration.MetricsIp, 
+            _metricsConfiguration.MetricsPort);
         
         return base.Start();
     }

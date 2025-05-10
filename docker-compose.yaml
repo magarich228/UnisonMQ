@@ -1,0 +1,62 @@
+version: '3.8'
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
+networks:
+  n_unisonmq_metrics:
+    driver: bridge
+
+services:
+  unisonmq.server:
+    image: unisonmq
+    container_name: unisonmq.server
+    build:
+      context: .
+      dockerfile: src/UnisonMQ.Starter/Dockerfile
+    ports:
+      - "5888:5888"
+      - "5889:5889"
+    environment:
+      - MetricsIp=+
+    networks:
+      - n_unisonmq_metrics
+    labels:
+      - "prometheus.scrape=true"
+      - "prometheus.port=5889"
+      - "prometheus.path=/metrics"
+  
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    networks:
+      - n_unisonmq_metrics
+    depends_on:
+      - unisonmq.server
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=unisonmq
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3001:3000"
+    networks:
+      - n_unisonmq_metrics
+    depends_on:
+      - prometheus

@@ -14,7 +14,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IsEnabled = false;
     }
     
-    private string _name;
+    private string _name = string.Empty;
 
     [ObservableProperty]
     private bool _isEnabled;

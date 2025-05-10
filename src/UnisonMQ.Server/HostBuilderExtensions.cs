@@ -38,6 +38,7 @@ public static class HostBuilderExtensions
         hostBuilderContext.Configuration.Bind(metricsConfiguration);
         
         services.AddSingleton(configuration);
+        services.AddSingleton(metricsConfiguration);
         services.AddSingleton(CreateServer);
 
         services.AddQueues();
@@ -64,13 +65,15 @@ public static class HostBuilderExtensions
     private static UnisonMqServer CreateServer(IServiceProvider serviceProvider)
     {
         var configuration = serviceProvider.GetRequiredService<TcpServerConfiguration>();
+        var metricsConfiguration = serviceProvider.GetRequiredService<MetricsConfiguration>();
         var sessionManager = serviceProvider.GetRequiredService<ISessionManager>();
         var queueService = serviceProvider.GetRequiredService<IQueueService>();
         var operationProcessorFactory = serviceProvider.GetRequiredService<IOperationProcessorFactory>();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         
         var server = new UnisonMqServer(
-            configuration, 
+            configuration,
+            metricsConfiguration,
             sessionManager,
             queueService,
             operationProcessorFactory, 

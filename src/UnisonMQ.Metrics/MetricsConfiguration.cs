@@ -2,6 +2,6 @@
 
 public class MetricsConfiguration
 {
-    public string MetricsIp { get; set; } = "127.0.0.1";
-    public int MetricsPort { get; set; } = 5890;
+    public string MetricsIp { get; set; } = "localhost";
+    public int MetricsPort { get; set; } = 5889;
 }

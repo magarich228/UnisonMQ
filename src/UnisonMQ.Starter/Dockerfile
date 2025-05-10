@@ -23,4 +23,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 EXPOSE 5888
+EXPOSE 5889
 ENTRYPOINT ["dotnet", "UnisonMQ.Starter.dll"]
