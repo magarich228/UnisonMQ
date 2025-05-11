@@ -8,6 +8,7 @@ WORKDIR /src
 COPY ["src/UnisonMQ.Starter/UnisonMQ.Starter.csproj", "src/UnisonMQ.Starter/"]
 COPY ["src/UnisonMQ.Server/UnisonMQ.Server.csproj", "src/UnisonMQ.Server/"]
 COPY ["src/UnisonMQ.Abstractions/UnisonMQ.Abstractions.csproj", "src/UnisonMQ.Abstractions/"]
+COPY ["src/UnisonMQ.Metrics/UnisonMQ.Metrics.csproj", "src/UnisonMQ.Metrics/"]
 COPY ["src/UnisonMQ.Operations/UnisonMQ.Operations.csproj", "src/UnisonMQ.Operations/"]
 COPY ["src/UnisonMQ.Queues/UnisonMQ.Queues.csproj", "src/UnisonMQ.Queues/"]
 RUN dotnet restore "src/UnisonMQ.Starter/UnisonMQ.Starter.csproj"
