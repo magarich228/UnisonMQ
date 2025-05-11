@@ -10,7 +10,7 @@ networks:
 
 services:
   unisonmq.server:
-    image: unisonmq
+    image: magarcih/unisonmq
     container_name: unisonmq.server
     build:
       context: .
