@@ -41,6 +41,11 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
 
     public void Subscribe<T>(string subject, Action<UnisonMessage<T>> onReceived)
     {
+        if (!base.IsConnected)
+        {
+            throw new UnisonMqClientException("Client not connected.");
+        }
+        
         var sid = _subscriptionId++;
 
         base.SendAsync($"sub {subject} {sid}\r\n");
@@ -59,6 +64,11 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
 
     public void Publish(string subject, object data)
     {
+        if (!base.IsConnected)
+        {
+            throw new UnisonMqClientException("Client not connected.");
+        }
+        
         var messageBody = Serialization.Serialize(data);
         var messageBodyLength = messageBody.Length;
         var fullMessageBodyLength = messageBodyLength + 2;
