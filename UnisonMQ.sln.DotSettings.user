@@ -3,6 +3,7 @@
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::6287F178-8F62-4901-B343-713DDB507E10::net8.0::UnisonMQ.E2E.Tests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::6287F178-8F62-4901-B343-713DDB507E10::net8.0::UnisonMQ.E2E.PubSubScenarios.SubAnd5PubsTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::6DBF2B9E-3E39-4256-A0FE-38C62FB69CD1::net8.0::UnisonMQ.Performance.PerformanceTests.OneTimePubTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>

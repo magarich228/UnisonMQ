@@ -1,26 +1,34 @@
 using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Threading;
 using UnisonMQ.Client;
 
 namespace UnisonMQ.Performance;
 
+[Category(Categories.Performance)]
 [TestFixture]
 public class PerformanceTests
 {
+    private static readonly ConcurrentDictionary<int, IUnisonMqClient> Clients = new();
+    
     [Test]
     public void OneTimePubTest()
     {
-        IUnisonMqClient client = new UnisonMqClientService("127.0.0.1", 5888);
-        
-        var connected = client.ConnectAsync();
-        
-        Assert.That(connected, Is.True);
+        var threadId = Thread.CurrentThread.ManagedThreadId;
+        File.AppendAllLines("log.txt", new[] { threadId.ToString() });
+
+        if (!Clients.TryGetValue(threadId, out var client))
+        {
+            client = new UnisonMqClientService(new UnisonMqConfiguration());
+            Clients.TryAdd(threadId, client);
+            
+            client.ConnectAsync();
+        }
         
         client.Publish("test", new Message());
         
         Assert.Pass();
-        
-        client.CloseAsync();
-        client.DisposeAsync();
     }
 }
 
