@@ -33,7 +33,7 @@ UnisonMQ is a lightweight yet powerful message broker designed for the .NET ecos
 ---
 
 ### **Docker Deployment** 🐳  
-UnisonMQ is available as a preconfigured Docker image with metrics and port settings:  
+[UnisonMQ](https://hub.docker.com/r/magarich/unisonmq) is available as a preconfigured Docker image with metrics and port settings:  
 ```bash
 docker run -e MetricsIp="+" -p 5888:5888 -p 5889:5889 --name unisonmq magarich/unisonmq
 ```  
@@ -45,11 +45,11 @@ docker run -e MetricsIp="+" -p 5888:5888 -p 5889:5889 --name unisonmq magarich/u
 
 ### **C# Client Libraries** 📦  
 Integrate UnisonMQ into your projects using NuGet packages:  
-- **Core Client**:  
+- [**Core Client**](https://www.nuget.org/packages/UnisonMQ.Client):  
   ```bash
   dotnet add package UnisonMQ.Client
   ```  
-- **Dependency Injection Support**:  
+- [**Dependency Injection Support**](https://www.nuget.org/packages/UnisonMQ.DependencyInjection):  
   ```bash
   dotnet add package UnisonMQ.DependencyInjection
   ```  
@@ -154,3 +154,15 @@ rate(broker_messages_published_total[1m])
 - Seamless .NET integration 🔄.  
 
 Ideal for **IoT** 📶, **microservices** 🧩, and **real-time systems** ⏱️ where speed and reliability are critical!
+
+---
+### **License** 📜  
+UnisonMQ is released under the **Apache License 2.0**.  
+For full details, see the [LICENSE](LICENSE) file in the repository.  
+
+### **Author** 👨💻  
+- **[Magarich228](https://github.com/magarich228)** - Creator and maintainer of UnisonMQ.  
+
+---
+
+**Happy messaging!** 🎉  
