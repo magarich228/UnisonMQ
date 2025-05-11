@@ -7,13 +7,18 @@ client.ConnectAsync();
 
 client.Ping();
 
-client.Subscribe<TimeEvent>(
-    "time",
-    m => Console.WriteLine($"{m.Subject}: Id - {m.Data.MessageId}, Time - {m.Data.TimeStamp}"));
-
 while (true)
 {
-    client.Publish("time", new TimeEvent());
+    try
+    {
+        client.Publish("time", new TimeEvent());
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+
+    Console.WriteLine("Published message.");
     
-    await Task.Delay(3000);
+    await Task.Delay(1000);
 }

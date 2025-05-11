@@ -52,7 +52,7 @@ public static class HostBuilderExtensions
             .WithMetrics(m =>
             {
                 m
-                    .AddMeter("UnisonMQ.Metrics")
+                    .AddMeter(UnisonMetrics.MeterName)
                     .AddRuntimeInstrumentation()
                     .AddProcessInstrumentation()
                     .AddPrometheusHttpListener(opt =>

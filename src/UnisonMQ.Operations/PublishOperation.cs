@@ -113,6 +113,7 @@ internal class PublishOperation : Operation
                 var messageBytes = data.MessageBytes(publishContext.Subject, sub.Sid, publishContext.MessageLength);
                 var result = subSession.SendAsync(messageBytes);
 
+                UnisonMetrics.MessagePublished(publishContext.Subject);
                 _logger.LogTrace("Sent {0} {1} {2}", sub.ClientId, sub.Sid, result);
             }
 

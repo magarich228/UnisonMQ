@@ -50,7 +50,7 @@ internal class Processor : IOperationProcessor
         // TODO: temp or only development environment
         _logger.LogDebug("operation data: {OperationData}", Encoding.UTF8.GetString(operationData));
         
-        var result = Operation.ExecuteAsync(session, operationData, OperationContext);
+        var result = Operation.TrackedExecuteAsync(session, operationData, OperationContext);
         result.Apply(this);
         
         var remaining = _buffer.Skip(_offset);
