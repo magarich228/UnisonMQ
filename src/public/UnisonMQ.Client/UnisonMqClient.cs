@@ -31,7 +31,7 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
     public void Ping()
     {
         base.SendAsync("ping\r\n");
-        var expectationResult = _manager.ExpectDuring(TimeSpan.FromSeconds(5), Response.Pong);
+        var expectationResult = _manager.ExpectDuring(TimeSpan.FromSeconds(3), Response.Pong);
 
         if (expectationResult != 0)
         {
@@ -45,7 +45,7 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
 
         base.SendAsync($"sub {subject} {sid}\r\n");
         var expectationResult = _manager.ExpectDuring(
-            TimeSpan.FromSeconds(5),
+            TimeSpan.FromSeconds(3),
             Response.Ok,
             Response.Error);
 
@@ -79,7 +79,7 @@ internal class UnisonMqClient(UnisonMqConfiguration configuration)
         base.SendAsync(buffer);
 
         var expectationResult = _manager.ExpectDuring(
-            TimeSpan.FromSeconds(60),
+            TimeSpan.FromSeconds(3),
             Response.Ok,
             Response.Error);
 

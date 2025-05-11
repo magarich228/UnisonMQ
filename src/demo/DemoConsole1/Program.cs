@@ -12,13 +12,13 @@ while (true)
     try
     {
         client.Publish("time", new TimeEvent());
+        
+        Console.WriteLine("Published message.");
     }
     catch (Exception ex)
     {
         Console.WriteLine($"Error: {ex.Message}");
     }
-
-    Console.WriteLine("Published message.");
     
     await Task.Delay(1000);
 }
