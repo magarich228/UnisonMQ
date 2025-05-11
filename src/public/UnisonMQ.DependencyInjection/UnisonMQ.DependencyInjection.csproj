@@ -9,8 +9,9 @@
         <Authors>magarich228</Authors>
         <Description>UnisonMQ client dependency injection lib.</Description>
         <PackageProjectUrl>https://github.com/magarich228/UnisonMQ</PackageProjectUrl>
-        <PackageLicenseUrl>https://mit-license.org/</PackageLicenseUrl>
+        <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/magarich228/UnisonMQ</RepositoryUrl>
+        <Version>1.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
