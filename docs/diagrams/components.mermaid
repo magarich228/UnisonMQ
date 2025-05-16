@@ -1,0 +1,19 @@
+graph TD
+    subgraph Сервер
+        A[TCP Endpoint] --> B[Ядро системы]
+        B --> C[Текстовый протокол]
+        C --> D[Маршрутизация Pub/Sub]
+        D --> E[Очереди сообщений]
+        B --> F[HTTP Endpoint]
+        F --> G[Модуль метрик]
+    end
+
+    subgraph Клиенты
+        I[Приложение 1] --> A
+        J[Приложение 2] --> A
+    end
+
+    subgraph Мониторинг
+        G --> H[Prometheus]
+        H --> K[Grafana]
+    end

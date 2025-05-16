@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant Клиент
+    participant TCP_Endpoint
+    participant Маршрутизация
+    participant Очередь
+    participant Метрики
+
+    Клиент ->> TCP_Endpoint: PUB <topic> <data>
+    TCP_Endpoint ->> Маршрутизация: Парсинг команды
+    Маршрутизация ->> Очередь: Сохранение сообщения
+    Очередь ->> Метрики: Обновление счетчиков
+    Метрики -->> Prometheus: Экспорт данных

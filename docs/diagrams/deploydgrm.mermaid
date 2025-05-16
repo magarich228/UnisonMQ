@@ -1,0 +1,8 @@
+flowchart LR
+    subgraph Docker
+        A[UnisonMQ-Server] -->|TCP| Clients
+        A -->|HTTP| B[Prometheus]
+        B --> C[Grafana]
+    end
+
+    Clients -->|PUB/SUB| A
